@@ -3,6 +3,9 @@ public class People {
 	public int  gender, age;
 	public String name, ID ,PWD, intro,  phone;
 	
+	public People() {
+		// TODO Auto-generated constructor stub
+	}
 	public People(String name, int gender, int age, String phone, String ID, String PWD, String intro) {
 		this.name = name;
 		this.gender = gender;
@@ -15,6 +18,8 @@ public class People {
 	}
 	
 	// 필요한 메서드 포함 가능 (완전히 일반적인 객체처럼 사용 가능이 장점)
+
+	
 
 	public String getName() {
 		return name;

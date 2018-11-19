@@ -50,14 +50,14 @@ public class login extends JPanel implements ActionListener{
 		//JPanel Button = new JPanel();
 		//Button.setLayout(null);
 		
-		Login_normalIcon = new ImageIcon("/image/Login.png");
-		Login_rolloverIcon = new ImageIcon("/image/Login hover.png");
-		Login_pressedIcon = new ImageIcon("/image/Login active.png");
+		Login_normalIcon = new ImageIcon("image\\Login.png");
+		Login_rolloverIcon = new ImageIcon("image\\Login hover.png");
+		Login_pressedIcon = new ImageIcon("image\\Login active.png");
 		
 		Login_Button = new JButton(Login_normalIcon);
 		Login_Button.setPressedIcon(Login_pressedIcon);
 		Login_Button.setRolloverIcon(Login_rolloverIcon);
-		Login_Button.setBounds(307, 201, 105, 27);
+		Login_Button.setBounds(307, 201, 150, 27);
 		
 		add(Login_Button);
 		

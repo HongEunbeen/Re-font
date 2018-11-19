@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 
 
 public class Main extends JFrame implements ActionListener{
+	
+	public static People MainUser;
 	JMenuBar menuBar;
 	JMenu Menu_1, Menu_2, Menu_3, Menu_4;
 	JMenuItem Menu_1_1,Menu_1_2,Menu_2_1,Menu_2_2,Menu_2_3,Menu_2_4,Menu_3_1,Menu_3_2,Menu_4_1,Menu_4_2,Menu_4_3;
@@ -32,8 +34,10 @@ public class Main extends JFrame implements ActionListener{
 	Introduce_my Introduce_My = new Introduce_my();
 	Mainpage Mainpage = new Mainpage();
 	RivewPage RivewPage = new RivewPage();
-	//PeopleNodify PeopleNodify = new PeopleNodify();
-	public static People MainUser;
+	PeopleNodify PeopleNodify = new PeopleNodify();
+	RivewPage_my RivewPage_my = new RivewPage_my();
+	
+	
 	
 	public Main() {
 		setLayout(card);
@@ -46,7 +50,8 @@ public class Main extends JFrame implements ActionListener{
 		add(Introduce,"Introduce");
 		add(Introduce_My,"Introduce_My");
 		add(RivewPage,"RivewPage");
-		//add(PeopleNodify,"PeopleNodify");
+		add(RivewPage_my,"RivewPage_my");
+		add(PeopleNodify,"PeopleNodify");
 	}
 	public void Menu(){
 		menuBar = new JMenuBar();
@@ -134,7 +139,7 @@ public class Main extends JFrame implements ActionListener{
 		}else if(e.getSource().equals(Menu_3_1)) {
 			card.show(getContentPane(), "");
 		}else if(e.getSource().equals(Menu_3_2)) {
-			card.show(getContentPane(), "");
+			card.show(getContentPane(), "RivewPage_my");
 		}else if(e.getSource().equals(Menu_4_1)) {
 			if(MainUser == null) {
 				card.show(getContentPane(), "Login");
@@ -165,18 +170,24 @@ class Mainpage extends JPanel implements ActionListener{
 	Mainpage(){
 		setBounds(0, 0, 782, 407);
 		setLayout(null);
-		MainImage = new JLabel(new ImageIcon("image_!/MainImage.jpg"));
+		MainImage = new JLabel(new ImageIcon("image\\Introduce_home.jpg"));
 		MainImage.setBounds(60, 12, 670, 317);
 		add(MainImage);
 		
 		InfoButton = new JButton("저작권?");
 		InfoButton.setBounds(635, 341, 95, 39);
 		add(InfoButton);
+		InfoButton.addActionListener(this);
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(InfoButton)) {
+			JOptionPane.showMessageDialog(null,"폰트는 컴퓨터 프로그램으로서만 저작권을 갖는다\n."
+					+ " 글씨체(폰트 도안) 자체가 보호되는 저작물은 아니다.\n"
+					+ " 폰트를 활용해 제작된 출력물이나 이미지 같은 2차 저작물에는 해당 폰트의 저작권 효력이 미치지 않는다.\n"
+					+ " 다만 폰트 ‘파일’을 무단 복제하거나 불법으로 내려받기 한 경우에는 저작권 침해로 죄를 물을 수 있다.\n","IMFOMATRION", JOptionPane.INFORMATION_MESSAGE);
+		}
 		
 	}
 	

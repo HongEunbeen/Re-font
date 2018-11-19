@@ -50,6 +50,7 @@ public class PeopleNodify extends JPanel implements ActionListener{
 	
 	String[] age_combo = new String[100];
 	
+	People loginuser = new People();
 	
 	
 	PeopleNodify(){
@@ -191,20 +192,18 @@ public class PeopleNodify extends JPanel implements ActionListener{
 			Enter_PWD_field.setText("");
 				Enter_PWD_HAK_field.setText("");
 				int Enter_result = JOptionPane.showConfirmDialog(null, "비밀번호를 다시 확인해 주세요","login Enter_result",JOptionPane.YES_OPTION);
-			}else if(!Enter_PWD_field.getText().equals(user.getPWD())) {
+			}else if(!Enter_PWD_field.getText().equals(Main.MainUser.getPWD())) {
 				int Enter_result = JOptionPane.showConfirmDialog(null, "PWD를 정말 바꾸시겠습니까?","HAK_Enter_result",JOptionPane.YES_NO_OPTION);
 				if(Enter_result != JOptionPane.YES_OPTION) {
 				JOptionPane.showMessageDialog(null,"회원수정에 실패하셨습니다.","fail Nodify", JOptionPane.INFORMATION_MESSAGE);
 				}
 				else {
 					String NAME = Enter_name_field.getText();
-					String ID = Enter_ID_text2.getText();
 					String PWD = Enter_PWD_field.getText();
 					String INTRO = Enter_intro_area.getText();
 					String PHONE = Enter_phone_field.getText();
 					
-					People person = new People(NAME,gender_index,age_index, PHONE,ID,PWD,INTRO);
-					
+					People person = new People(NAME,gender_index, age_index, PHONE,Main.MainUser.ID, PWD, INTRO);
 					try {
 						PeopleDAO.People_nodify(person);
 					} catch (SQLException e1) {

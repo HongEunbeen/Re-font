@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class PeopleDAO {
 	private static Connection conn = null;
-	private static People people;
+	private static PeopleDTO people;
 	private static final String TABLE_NAME = "people";
 	private static final String USER = "root";
 	private static final String PW = "dmsqls124";
@@ -44,7 +44,7 @@ public class PeopleDAO {
  
     }//getIdByCheck()
 
-	public static People People_add(People people) throws SQLException {
+	public static PeopleDTO People_add(PeopleDTO people) throws SQLException {
 			conn = DriverManager.getConnection(URL, USER, PW);
 			PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s VALUES(?, ?, ?, ?, ?, ?, ?)", TABLE_NAME));
 			ps.setString(1, people.getName());
@@ -59,20 +59,20 @@ public class PeopleDAO {
 			
 			return res == 1 ? people : null;
 	}
-	public static People People_get(String ID) throws SQLException {
+	public static PeopleDTO People_get(String ID) throws SQLException {
 		conn = DriverManager.getConnection(URL, USER, PW);
-		People user = null;
+		PeopleDTO user = null;
 		PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE ID = ?", TABLE_NAME));
 		ps.setString(1, ID);
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
-			user = new People( rs.getString("name"), rs.getInt("gender"),rs.getInt("age"), rs.getString("phone"), rs.getString("ID"), rs.getString("PWD"), rs.getString("intro"));
-		}else user = null;
+			user = new PeopleDTO( rs.getString("name"), rs.getInt("gender"),rs.getInt("age"), rs.getString("phone"), rs.getString("ID"), rs.getString("PWD"), rs.getString("intro"));
+		}
 		ps.close();
 		rs.close();
 		return user;
 	}
-	public static People People_nodify(People people) throws SQLException{
+	public static PeopleDTO People_nodify(PeopleDTO people) throws SQLException{
 		conn = DriverManager.getConnection(URL, USER, PW);
         try {
         	PreparedStatement ps = conn.prepareStatement(String.format("UPDATE people SET name=?, gender=? , age=? , phone=? , PWD=? , intro=? WHERE ID=?", TABLE_NAME));
@@ -94,29 +94,5 @@ public class PeopleDAO {
 		
 		return null;
 	}
-	public void getUserSearch(DefaultTableModel dt, String fieldName, String word) throws SQLException {
-		conn = DriverManager.getConnection(URL, USER, PW);
-        String sql = "SELECT * FROM people WHERE " + fieldName.trim()+ " LIKE '%" + word.trim() + "%'";
-        Statement st;
-        ResultSet rs;
-        try {
-        	st =  conn.createStatement();
-            rs = st.executeQuery(sql);
- 
-            // DefaultTableModel에 있는 기존 데이터 지우기
-            for (int i = 0; i < dt.getRowCount();) {
-                dt.removeRow(0);
-            }
- 
-            while (rs.next()) {
-                Object data[] = { rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getInt(5)};
-                dt.addRow(data);
-               }
- 
-        } catch (SQLException e) {
-            System.out.println(e + "=> getUserSearch fail");
-        }
- 
-    }//getUserSearch()
-		
+	
 }

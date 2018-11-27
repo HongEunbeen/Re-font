@@ -3,6 +3,7 @@ import java.awt.Component;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
@@ -28,10 +29,20 @@ public class RivewPage_my extends JPanel {
 	JComboBox searchCombo;
 	RivewDTO MainRivew;
 	RivewDAO dao = new RivewDAO();
-	String ID = "ID";
+	RivewDTO dto = new RivewDTO();
+	connDTO cdto = new connDTO();
+	connDAO cdao = new connDAO();
+	PeopleDTO pdto = new PeopleDTO();
+	PeopleDAO pdao = new PeopleDAO();
+	
+	
 	String user;
 	String Menu_string[] = {"num","font","title","ID","name","rivew","like"};
-	DefaultTableModel model = new DefaultTableModel(Menu_string, 0);
+	DefaultTableModel model = new DefaultTableModel(Menu_string, 0){  //셀 수정 못하게 하는 부분
+		 public boolean isCellEditable(int row, int column){
+			    return false;
+			 }
+	};
 	JTable rivewTable = new JTable(model);
 	JScrollPane  pane = new JScrollPane(rivewTable);
 	RivewDAO RivewDAO = new RivewDAO();
@@ -39,7 +50,18 @@ public class RivewPage_my extends JPanel {
     RivewPage_my(){
 		setBounds(14, 0, 782, 407);
 		setLayout(null);
-        dao.getUserSearch(model, ID, "ID");
+		rivewTable.getTableHeader().setReorderingAllowed(false); // 이동 불가 
+		rivewTable.getTableHeader().setResizingAllowed(false); // 크기 조절 불가 
+		
+		try {
+			cdto = cdao.getConn();
+			pdto = pdao.People_get(cdto.getID());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        dao.getUserSearch(model, "ID", pdto.getID());
         if (model.getRowCount() > 0)
             rivewTable.setRowSelectionInterval(0, 0);
          
@@ -48,17 +70,17 @@ public class RivewPage_my extends JPanel {
         background.add(pane);
         add(background);
         
-        InputButton = new JButton("글쓰기");
-        InputButton.setBounds(630, 380, 105, 27);
-        add(InputButton);
-        InputButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				InputRivew InputRivew = new InputRivew();
-			}
-		});
+        rivewTable.addMouseListener(new MouseAdapter() {
+			@Override public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount()==2) {
+                	int row = rivewTable.getSelectedRow();
+                	Object a = rivewTable.getValueAt(row, 0);
+                	int ac = (int)a;
+                	dto = dao.getUserSearch_num(ac);
+                	RivewShow rivew = new RivewShow(dto);
+                }
+		}});
         
-          
 	}
 
 }

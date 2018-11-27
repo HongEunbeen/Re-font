@@ -1,19 +1,18 @@
 
 public class RivewDTO {
 	String font;
-	public int num, like;
+	public int num;
 	public String name, rivew, ID, title;
 	public RivewDTO() {
 		
 	}
-	public RivewDTO(int num, String font, String title, String ID, String name, String rivew, int like) {
+	public RivewDTO(int num, String font, String title, String ID, String name, String rivew) {
 		this.num = num;
 		this.font = font;
 		this.title = title;
 		this.ID = ID;
 		this.name = name;
 		this.rivew = rivew;
-		this.like = like;
 	}
 	
 	// 필요한 메서드 포함 가능 (완전히 일반적인 객체처럼 사용 가능이 장점)
@@ -47,13 +46,6 @@ public class RivewDTO {
 
 	public void setRivew(String rivew) {
 		this.rivew = rivew;
-	}
-	public int getLike() {
-		return like;
-	}
-
-	public void setLike(int like) {
-		this.like = like;
 	}
 	
 	public String getFont() {

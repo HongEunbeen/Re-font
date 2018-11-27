@@ -217,7 +217,7 @@ public class Enter extends JPanel implements ActionListener{
 				String INTRO = Enter_intro_area.getText();
 				String PHONE = Enter_phone_field.getText();
 				
-				People person = new People(NAME,gender_index,age_index, PHONE,ID,PWD,INTRO);
+				PeopleDTO person = new PeopleDTO(NAME,gender_index,age_index, PHONE,ID,PWD,INTRO);
 				
 				try {
 					PeopleDAO.People_add(person);

@@ -55,7 +55,6 @@ public class RivewDAO {
                 dto.setID(rs.getString("ID"));
                 dto.setName(rs.getString("name"));
                 dto.setRivew(rs.getString("rivew"));
-                dto.setLike(rs.getInt("like"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,14 +64,13 @@ public class RivewDAO {
     }
 	public static RivewDTO RivewDTO_add(RivewDTO rivewDTO) throws SQLException {
 		conn = DriverManager.getConnection(URL, USER, PW);
-		PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s VALUES(?, ?, ?, ?, ?, ?, ?)", TABLE_NAME));
+		PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s VALUES(?, ?, ?, ?, ?, ?)", TABLE_NAME));
 		ps.setInt(1, rivewDTO.getNum());
 		ps.setString(2, rivewDTO.getFont());
 		ps.setString(3, rivewDTO.getTitle());
 		ps.setString(4, rivewDTO.getID());
 		ps.setString(5, rivewDTO.getName());
 		ps.setString(6, rivewDTO.getRivew());
-		ps.setInt(7, rivewDTO.getLike());
 		int res = ps.executeUpdate();
 		ps.close();
 		
@@ -85,7 +83,7 @@ public class RivewDAO {
         try {
         	conn = DriverManager.getConnection(URL, USER, PW);
             st = conn.createStatement();
-            rs = st.executeQuery("select * from rivew order by ID");
+            rs = st.executeQuery("select * from rivew order by num");
  
             // DefaultTableModel에 있는 기존 데이터 지우기
             for (int i = 0; i < t_model.getRowCount();) {
@@ -93,22 +91,42 @@ public class RivewDAO {
             }
  
             while (rs.next()) {
-                Object data[] = { rs.getInt(1), rs.getString(2),
-                        rs.getString(3), rs.getString(4),rs.getString(5),rs.getString(6),rs.getInt(7) };
+                Object data[] = { rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),rs.getString(5),rs.getString(6)};
  
                 t_model.addRow(data); //DefaultTableModel에 레코드 추가
             }
  
         } catch (SQLException e) {
-            System.out.println(e + "=> userSelectAll fail");
+            System.out.println(e + "=> userSelectAll fail Rivew");
         }
     }//userSelectAll()
+    public void userSelectfont(String fieldName, DefaultTableModel t_model) {
+   	 Statement st = null; //명령
+        ResultSet rs = null;  
+       try {
+       	conn = DriverManager.getConnection(URL, USER, PW);
+           st = conn.createStatement();
+           rs = st.executeQuery("select * from rivew where font = "+"'"+fieldName+"'");
+
+           // DefaultTableModel에 있는 기존 데이터 지우기
+           for (int i = 0; i < t_model.getRowCount();) {
+               t_model.removeRow(0);
+           }
+
+           while (rs.next()) {
+               Object data[] = { rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),rs.getString(5),rs.getString(6)};
+
+               t_model.addRow(data); //DefaultTableModel에 레코드 추가
+           }
+
+       } catch (SQLException e) {
+           System.out.println(e + "=> userSelectfont fail Rivew");
+       }
+   }//userSelectfont()
 
     
-    public void getUserSearch(DefaultTableModel dt, String fieldName,
-            String word) {
-        String sql = "SELECT * FROM rivew WHERE " + fieldName.trim()
-                + " LIKE '%" + word.trim() + "%'";
+    public void getUserSearch(DefaultTableModel dt, String fieldName, String word) {
+        String sql = "SELECT * FROM rivew WHERE " + fieldName.trim() + " LIKE '%" + word.trim() + "%'";
         Statement st = null; //명령
         ResultSet rs = null;         //결과
        
@@ -124,15 +142,35 @@ public class RivewDAO {
  
             while (rs.next()) {
                 Object data[] = {  rs.getInt(1), rs.getString(2),
-                        rs.getString(3), rs.getString(4),rs.getString(5),rs.getString(6),rs.getInt(7) };
+                        rs.getString(3), rs.getString(4),rs.getString(5),rs.getString(6)};
  
                 dt.addRow(data);
             }
  
         } catch (SQLException e) {
-            System.out.println(e + "=> getUserSearch fail");
+            System.out.println(e + "=> getUserSearch fail Rivew");
         }
  
     }//getUserSearch()
+    public RivewDTO getUserSearch_num(int num) {
+	    String sql = "SELECT * FROM rivew where num = " + String.valueOf(num).trim();
+	    Statement st = null; //명령
+	    ResultSet rs = null;         //결과
+	    RivewDTO rdto = null;
+	    try{
+	    	conn = DriverManager.getConnection(URL, USER, PW);
+	        st = conn.createStatement();
+	        rs = st.executeQuery(sql);
+	        
+	        while (rs.next()) {
+	        	System.out.println(rs.getInt(1)+rs.getString(2)+rs.getString(3)+"안녕");
+		        rdto = new RivewDTO(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),rs.getString(5),rs.getString(6));
+	        }
+	        
+	    } catch (SQLException e) {
+	        System.out.println(e + "=> getUserSearch_num fail Rivew");
+	    }
+	    return rdto;
+	}//getUser()
 }
 	

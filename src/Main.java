@@ -3,10 +3,9 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.Statement;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,24 +20,22 @@ import javax.swing.JPanel;
 
 public class Main extends JFrame implements ActionListener{
 	
-	public static People MainUser;
 	JMenuBar menuBar;
 	JMenu Menu_1, Menu_2, Menu_3, Menu_4;
-	JMenuItem Menu_1_1,Menu_1_2,Menu_2_1,Menu_2_2,Menu_2_3,Menu_2_4,Menu_3_1,Menu_3_2,Menu_4_1,Menu_4_2,Menu_4_3;
-	
+	JMenuItem Menu_1_1,Menu_1_2,Menu_2_1,Menu_2_2,Menu_2_3,Menu_2_4,Menu_3_1,Menu_3_2,Menu_4_1,Menu_4_2,Menu_4_3,Menu_4_4;
+	static public String CurrentID;
 	public static CardLayout card = new CardLayout();
-	
 	login Login = new login();
 	Enter Enter = new Enter();
 	Introduce Introduce = new Introduce();
 	Introduce_my Introduce_My = new Introduce_my();
 	Mainpage Mainpage = new Mainpage();
 	RivewPage RivewPage = new RivewPage();
-	PeopleNodify PeopleNodify = new PeopleNodify();
-	RivewPage_my RivewPage_my = new RivewPage_my();
-	
-	
-	
+	FontMain FontMain = new FontMain();
+	FontRecom FontRecom = new FontRecom();
+	connDAO dao = new connDAO();
+	connDTO dto = new connDTO();
+
 	public Main() {
 		setLayout(card);
 		setTitle("은빈이의 귀여운 페이지");
@@ -49,10 +46,12 @@ public class Main extends JFrame implements ActionListener{
 		add(Enter,"Enter");
 		add(Introduce,"Introduce");
 		add(Introduce_My,"Introduce_My");
+		add(FontMain, "FontMain");
 		add(RivewPage,"RivewPage");
-		add(RivewPage_my,"RivewPage_my");
-		add(PeopleNodify,"PeopleNodify");
+		add(FontMain, "FontMain");
+		add(FontRecom, "FontRecom");
 	}
+	
 	public void Menu(){
 		menuBar = new JMenuBar();
 		menuBar.setBackground(new Color(240, 240, 240));
@@ -71,7 +70,7 @@ public class Main extends JFrame implements ActionListener{
 		Menu_1_1 = new JMenuItem("홈페이지 소개");
 		Menu_1_2 = new JMenuItem("개발자 소개");
 		Menu_2_1  = new JMenuItem("글꼴");
-		Menu_2_2 = new JMenuItem("검색");
+		Menu_2_2 = new JMenuItem("추천");
 		Menu_2_3 = new JMenuItem("순위");
 		Menu_2_4 = new JMenuItem("평가");
 		Menu_3_1 = new JMenuItem("다운로드 글꼴 조회");
@@ -79,6 +78,7 @@ public class Main extends JFrame implements ActionListener{
 		Menu_4_1 = new JMenuItem("로그인");
 		Menu_4_2 = new JMenuItem("회원가입");
 		Menu_4_3 = new JMenuItem("내 정보");
+		Menu_4_4 = new JMenuItem("로그아웃");
 		Menu_1_1.addActionListener(this);
 		Menu_1_2.addActionListener(this);
 		Menu_2_1.addActionListener(this);
@@ -90,6 +90,7 @@ public class Main extends JFrame implements ActionListener{
 		Menu_4_1.addActionListener(this);
 		Menu_4_2.addActionListener(this);
 		Menu_4_3.addActionListener(this);
+		Menu_4_4.addActionListener(this);
 		
 		Menu_1.add(Menu_1_1);
 		Menu_1.add(Menu_1_2);
@@ -102,6 +103,7 @@ public class Main extends JFrame implements ActionListener{
 		Menu_4.add(Menu_4_1);
 		Menu_4.add(Menu_4_2);
 		Menu_4.add(Menu_4_3);
+		Menu_4.add(Menu_4_4);
 	}
 	public static Connection conn = null;
 	
@@ -110,10 +112,8 @@ public class Main extends JFrame implements ActionListener{
 			public void run() {
 				try {
 					Main frame = new Main();
-					
 					frame.setSize(1280,700);
 					frame.setVisible(true);
-					
 				} 
 				catch (Exception e) {
 					e.printStackTrace();
@@ -124,44 +124,80 @@ public class Main extends JFrame implements ActionListener{
 	});	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(Menu_1_1)){
-			card.show(getContentPane(), "Introduce");
-		}else if(e.getSource().equals(Menu_1_2)) {
-			card.show(getContentPane(), "Introduce_My");
-		}else if(e.getSource().equals(Menu_2_1)) {
-			card.show(getContentPane(), "");
-		}else if(e.getSource().equals(Menu_2_2)) {
-			card.show(getContentPane(), "");
-		}else if(e.getSource().equals(Menu_2_3)) {
-			card.show(getContentPane(), "");
-		}else if(e.getSource().equals(Menu_2_4)) {
-			card.show(getContentPane(), "RivewPage");
-		}else if(e.getSource().equals(Menu_3_1)) {
-			card.show(getContentPane(), "");
-		}else if(e.getSource().equals(Menu_3_2)) {
-			card.show(getContentPane(), "RivewPage_my");
-		}else if(e.getSource().equals(Menu_4_1)) {
-			if(MainUser == null) {
+		dto = dao.getConn();
+			if (e.getSource().equals(Menu_1_1)){
+				card.show(getContentPane(), "Introduce");
+			}else if(e.getSource().equals(Menu_1_2)) {
+				card.show(getContentPane(), "Introduce_My");
+			}else if(e.getSource().equals(Menu_2_1)) {
+				card.show(getContentPane(), "FontMain");
+			}else if(e.getSource().equals(Menu_2_2)) {
+				card.show(getContentPane(), "FontRecom");
+			}else if(e.getSource().equals(Menu_2_3)) {
+				Ranking Ranking = new Ranking();
+			}else if(e.getSource().equals(Menu_2_4)) {
+				card.show(getContentPane(), "RivewPage");
+			}
+		if(e.getSource().equals(Menu_3_2)) {
+			if(dto == null) {
+				JOptionPane.showMessageDialog(null,"로그인을 해주세요","Seccues Enter", JOptionPane.INFORMATION_MESSAGE);
+				card.show(getContentPane(), "Login");
+			}else{
+				RivewPage_my RivewPage_my = new RivewPage_my();
+				add(RivewPage_my,"RivewPage_my");
+				card.show(getContentPane(), "RivewPage_my");
+			}
+				
+		}
+		if(e.getSource().equals(Menu_3_1)) {
+			if(dto == null) {
+				JOptionPane.showMessageDialog(null,"로그인을 해주세요","Seccues Enter", JOptionPane.INFORMATION_MESSAGE);
+				card.show(getContentPane(), "Login");
+			}else{
+				Download_my Download_my = new Download_my();				
+				add(Download_my,"Download_my");
+				card.show(getContentPane(), "Download_my");	
+			}
+						
+		}
+		if(e.getSource().equals(Menu_4_1)) {
+			System.out.println(dto);
+			if(dto == null) {
 				card.show(getContentPane(), "Login");
 			}else {
 				JOptionPane.showMessageDialog(null,"이미 로그인 되어있습니다.","Seccues Enter", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}else if(e.getSource().equals(Menu_4_2)) {
-			if(MainUser == null) {
+			if(dto == null) {
 				card.show(getContentPane(), "Enter");
 			}else {
 				JOptionPane.showMessageDialog(null,"이미 로그인 되어있습니다.","Seccues Enter", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}else if(e.getSource().equals(Menu_4_3)) {
-			if(MainUser == null) {
+			if(dto == null) {
+				JOptionPane.showMessageDialog(null,"로그인을 해주세요","Seccues Enter", JOptionPane.INFORMATION_MESSAGE);
+				card.show(getContentPane(), "Login");
+			}else {
+				PeopleNodify PeopleNodify = new PeopleNodify();
+				add(PeopleNodify,"PeopleNodify");
+				card.show(getContentPane(), "PeopleNodify");
+			}
+		}else if(e.getSource().equals(Menu_4_4)) {
+			if(dto == null) {
 				JOptionPane.showMessageDialog(null,"로그인을 해주세요","Seccues Enter", JOptionPane.INFORMATION_MESSAGE);
 				card.show(getContentPane(), "Login");
 			}
-			//card.show(getContentPane(), "UserNodify");
+			else {
+				System.out.println(dto);
+				dto = null;
+				System.out.println(dto);
+				JOptionPane.showMessageDialog(null,"로그아웃이 되었습니다.","Seccues Enter", JOptionPane.INFORMATION_MESSAGE);
+				Logout logout = new Logout();			
+			}
+			
 		}
 		
 	}
-	
 	
 }
 class Mainpage extends JPanel implements ActionListener{
@@ -190,5 +226,6 @@ class Mainpage extends JPanel implements ActionListener{
 		}
 		
 	}
+	
 	
 }

@@ -25,6 +25,11 @@ public class login extends JPanel implements ActionListener{
 
 	public static Connection conn = null;
 	
+	private ClientBackground client = new ClientBackground();
+    private static String nickName;
+	
+	connDAO dao = new connDAO();
+	connDTO dto = new connDTO();
 	login(){
 		
 		setBounds(14, 12, 754, 383);
@@ -46,9 +51,6 @@ public class login extends JPanel implements ActionListener{
 		add(Input_PW_text);
 		add(Input_ID_field);
 		add(Input_PWD_field);
-		
-		//JPanel Button = new JPanel();
-		//Button.setLayout(null);
 		
 		Login_normalIcon = new ImageIcon("image\\Login.png");
 		Login_rolloverIcon = new ImageIcon("image\\Login hover.png");
@@ -77,14 +79,17 @@ public class login extends JPanel implements ActionListener{
 			else if(login_result == JOptionPane.YES_OPTION) {
 				if(Input_ID_field != null && Input_PWD_field != null){
 					try {
-						People user = PeopleDAO.People_get(Input_ID_field.getText());
+						PeopleDTO user = PeopleDAO.People_get(Input_ID_field.getText());
 						if(user != null){
 							if(user.PWD.equals(Input_PWD_field.getText())) {
 								JOptionPane.showMessageDialog(null,"로그인에 성공하셨습니다.","Seccues Login", JOptionPane.INFORMATION_MESSAGE);
-								Main.MainUser = user;
+								dao.connDTO_add(user.getID());
+								nickName = user.getID();
+								connClient();
+								
 							}
 							else {
-								JOptionPane.showMessageDialog(null,"로그인에 실패하셨습니다.","fail Login", JOptionPane.INFORMATION_MESSAGE);
+								JOptionPane.showMessageDialog(null,"로그인에 실패하셨습니다eeeeeeee.","fail Login", JOptionPane.INFORMATION_MESSAGE);
 							}
 						}
 					} catch (SQLException e1) {
@@ -99,6 +104,12 @@ public class login extends JPanel implements ActionListener{
 			
 		}
 		
+		
+	}
+	public void connClient() {
+		 client.setGui(this);
+	     client.setNickname(nickName);
+	     client.connect();
 	}
 }
 

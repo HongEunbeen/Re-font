@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 public class PeopleNodify extends JPanel implements ActionListener{
+	
 	JLabel Enter_name_text, Enter_gender_text, Enter_age_text, Enter_phone_text,Enter_intro_text,
 	Enter_ID_text, Enter_PWD_text, Enter_PWD_HAK_text,
 	Enter_Title, Enter_ID_text2 ;
@@ -50,16 +51,32 @@ public class PeopleNodify extends JPanel implements ActionListener{
 	
 	String[] age_combo = new String[100];
 	
-	People loginuser = new People();
-	
+	connDTO dto = new connDTO();
+	connDAO dao = new connDAO();
+	PeopleDTO pdto = new PeopleDTO();
+	PeopleDAO pdao = new PeopleDAO();
 	
 	PeopleNodify(){
 		setLayout(null);
 		Panel_info = new JPanel();
 		Panel_info.setBounds(14, 90, 377, 234);
 		Panel_info.setLayout(null);
+		if(dao.getConn() == null) {
+			System.out.println("asdfasdf");
+			return;
+		}
 		add(Panel_info);
+		dto = dao.getConn();
+		Object a = dto.getID();
+		String ID = (String)a;
+		try {
+			pdto = pdao.People_get(ID);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+		e1.printStackTrace();
+		}
 //기본 인적 정보 text
+		
 		Enter_name_text = new JLabel("이름");
 		Enter_gender_text = new JLabel("성별");
 		Enter_age_text = new JLabel("나이");
@@ -78,10 +95,10 @@ public class PeopleNodify extends JPanel implements ActionListener{
 		Panel_info.add(Enter_intro_text);
 
 //기본 인적 정보 field	
-		String name = Main.MainUser.getName();
+		
+		String name = ID;
 		Enter_name_field = new JTextField(name);
-		Enter_phone_field = new JTextField();
-		//Enter_phone_field.setText(user.getPhone());
+		Enter_phone_field = new JTextField(pdto.getPhone());
 		
 		Enter_name_field.setBounds(108, 26, 143, 24);
 		Enter_phone_field.setBounds(107, 116, 144, 24);
@@ -95,6 +112,7 @@ public class PeopleNodify extends JPanel implements ActionListener{
 //기본 인적 정보 area	
 		Enter_intro_area = new JTextArea(7,20);
 		Enter_intro_area.setBounds(107, 147, 144, 75);
+		Enter_intro_area.setText(pdto.getIntro());
 		Panel_info.add(new JScrollPane(Enter_intro_area));
 		
 //기본 인적 정보 combo		
@@ -103,7 +121,7 @@ public class PeopleNodify extends JPanel implements ActionListener{
 		}
 		Enter_age_combo = new JComboBox(age_combo);
 		Enter_age_combo.setBounds(124, 86, 34, 24);
-		//Enter_age_combo.setSelectedIndex(user.getAge());
+		Enter_age_combo.setSelectedIndex(pdto.getAge());
 		Panel_info.add(Enter_age_combo);
 //기본 인적 정보 RadioButton			
 		gender_RadioButton = new ButtonGroup();
@@ -117,9 +135,9 @@ public class PeopleNodify extends JPanel implements ActionListener{
 		Enter_gender_man.setBounds(114, 55, 45, 27);
 		Enter_gender_woman.setBounds(169, 55, 45, 27);
 		
-		//if(user.getGender() == 0) {
+		if(pdto.getGender() == 0) {
 			gender_RadioButton.setSelected(Enter_gender_man.getModel(), true);
-		//}else gender_RadioButton.setSelected(Enter_gender_woman.getModel(), true);
+		}else gender_RadioButton.setSelected(Enter_gender_woman.getModel(), true);
 		
 		gender_RadioButton.add(Enter_gender_man);
 		gender_RadioButton.add(Enter_gender_woman);
@@ -134,32 +152,26 @@ public class PeopleNodify extends JPanel implements ActionListener{
 		add(Panel_IDPWD);
 //ID,PWD text	
 		Enter_ID_text = new JLabel("ID");
+		
 		Enter_PWD_text = new JLabel("PWD");
 		Enter_PWD_HAK_text = new JLabel("PWD_HAK");
 		Enter_ID_text.setBounds(31, 29, 62, 18);
 		Enter_PWD_text.setBounds(31, 89, 62, 18);
-		Enter_PWD_HAK_text.setBounds(31, 136, 62, 18);
 		
 		Panel_IDPWD.add(Enter_ID_text);
 		Panel_IDPWD.add(Enter_PWD_text);
 		Panel_IDPWD.add(Enter_PWD_HAK_text);
 //ID,PWD field		
-		Enter_ID_text2 = new JLabel();
-		//Enter_ID_text2.setText(user.getID());
-		Enter_PWD_field = new JTextField();
-		//Enter_PWD_field.setText(user.getPWD());
-		Enter_PWD_HAK_field = new JTextField();
+		Enter_ID_text2 = new JLabel(pdto.getID());
+		Enter_PWD_field = new JTextField(pdto.getPWD());
 		
 		Enter_PWD_field.setColumns(10);
-		Enter_PWD_HAK_field.setColumns(10);
 		
 		Enter_ID_text2.setBounds(108, 26, 143, 24);
 		Enter_PWD_field.setBounds(107, 86, 144, 24);
-		Enter_PWD_HAK_field.setBounds(108, 133, 144, 24);
 		
 		Panel_IDPWD.add(Enter_ID_text2);
 		Panel_IDPWD.add(Enter_PWD_field);
-		Panel_IDPWD.add(Enter_PWD_HAK_field);
 //
 //회원가입, 리셋  Button	
 		Enter_Button = new JSplitPane();
@@ -187,36 +199,36 @@ public class PeopleNodify extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource().equals(Enter_OK_Button)){
-			
-			if(!Enter_PWD_field.getText().equals(Enter_PWD_HAK_field.getText())) {
-			Enter_PWD_field.setText("");
-				Enter_PWD_HAK_field.setText("");
-				int Enter_result = JOptionPane.showConfirmDialog(null, "비밀번호를 다시 확인해 주세요","login Enter_result",JOptionPane.YES_OPTION);
-			}else if(!Enter_PWD_field.getText().equals(Main.MainUser.getPWD())) {
-				int Enter_result = JOptionPane.showConfirmDialog(null, "PWD를 정말 바꾸시겠습니까?","HAK_Enter_result",JOptionPane.YES_NO_OPTION);
-				if(Enter_result != JOptionPane.YES_OPTION) {
-				JOptionPane.showMessageDialog(null,"회원수정에 실패하셨습니다.","fail Nodify", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else {
-					String NAME = Enter_name_field.getText();
-					String PWD = Enter_PWD_field.getText();
-					String INTRO = Enter_intro_area.getText();
-					String PHONE = Enter_phone_field.getText();
+			String NAME = Enter_name_field.getText();
+			String PWD = Enter_PWD_field.getText();
+			String INTRO = Enter_intro_area.getText();
+			String PHONE = Enter_phone_field.getText();
 					
-					People person = new People(NAME,gender_index, age_index, PHONE,Main.MainUser.ID, PWD, INTRO);
+			PeopleDTO person = new PeopleDTO( NAME,gender_index, age_index, PHONE, dto.getID(), PWD, INTRO);
+				try {
+					PeopleDAO.People_nodify(person);
+					JOptionPane.showMessageDialog(null,"정보를 수정하였습니다.","fail Login", JOptionPane.INFORMATION_MESSAGE);
 					try {
-						PeopleDAO.People_nodify(person);
+						dto = dao.getConn();
+						String ID = dto.getID();
+						pdto = pdao.People_get(ID);
 					} catch (SQLException e1) {
-						System.out.println("실패실패");
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
+					Enter_name_field.setText(pdto.getName());
+					Enter_phone_field.setText(pdto.getPhone());
+					Enter_PWD_field.setText(pdto.getPWD());
+					gender_RadioButton.setSelected(Enter_gender_man.getModel(), false);
+					gender_RadioButton.setSelected(Enter_gender_woman.getModel(), false);
+					Enter_age_combo.setSelectedIndex(0);
+				} catch (SQLException e1) {
+					System.out.println("실패실패");
 				}
-			}
-			
 		}else if(e.getSource().equals(Enter_reset_Button)){
 			Enter_name_field.setText("");
 			Enter_phone_field.setText("");
 			Enter_PWD_field.setText("");
-			Enter_PWD_HAK_field.setText("");
 			gender_RadioButton.setSelected(Enter_gender_man.getModel(), false);
 			gender_RadioButton.setSelected(Enter_gender_woman.getModel(), false);
 			Enter_age_combo.setSelectedIndex(0);
@@ -229,6 +241,8 @@ public class PeopleNodify extends JPanel implements ActionListener{
 
 		
 	} 
+	
+	
 	
 }
 
